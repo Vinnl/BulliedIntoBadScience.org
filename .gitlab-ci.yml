@@ -1,0 +1,22 @@
+image: ruby:latest
+
+build:
+  stage: build
+  script:
+  - gem install jekyll bundler
+  - bundle install
+  # Also build drafts (`--drafts`) when building in a non-master branch
+  - if [ "$CI_COMMIT_REF_NAME" == "master" ] ; then JEKYLL_ENV=production bundle exec jekyll build -d dist ; else bundle exec jekyll build -d dist --drafts ; fi
+  artifacts:
+    paths:
+    - dist
+pages:
+  stage: deploy
+  script:
+  - mv dist public
+  artifacts:
+    paths:
+    - public
+  environment:
+    name: staging
+    url: https://flockademic.gitlab.io/bulliedintobadscience.org/
